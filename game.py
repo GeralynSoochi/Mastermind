@@ -1,14 +1,19 @@
 import random
 
-COLORS = ["R", "G", "B", "Y", "W", "O"]
-TRIES = 10
-CODE_LENGTH = 4
+def update_conf(no_tries, code_len):
+    global colors
+    global tries
+    global code_length 
+
+    colors = ["R", "G", "B", "Y", "W", "O"]
+    tries = int(no_tries)
+    code_length = int(code_len)
 
 def generate_code():
     code = []
 
-    for _ in range(CODE_LENGTH):
-        color = random.choice(COLORS)
+    for _ in range(code_length):
+        color = random.choice(colors)
         code.append(color)
 
     return code
@@ -16,14 +21,15 @@ def generate_code():
 def guess_code():
 
     while True:
-        guess = input("Guess (e.g.: R R R R): ").upper().split(" ")
+        sample_string = "R "*code_length
+        guess = input(f"Guess (e.g.: {sample_string}): ").upper().split(" ")
 
-        if len(guess) != CODE_LENGTH:
-            print(f"You must guess {CODE_LENGTH} colors.")
+        if len(guess) != code_length:
+            print(f"You must guess {code_length} colors.")
             continue
 
         for color in guess:
-            if color not in COLORS:
+            if color not in colors:
                 print(f"nvalid color: {color}. Try again.")
         
         else:
@@ -54,15 +60,15 @@ def check_code(guess, real_code):
     return correct_pos, incorrect_pos
 
 def game():
-    print(f"Welcome to mastermind, you have {TRIES} tries to guess the code")
-    print("The valid colors are", *COLORS)
+    print(f"Welcome to mastermind, you have {tries} tries to guess the code")
+    print("The valid colors are", *colors)
 
     code = generate_code()
-    for attempts in range(1, TRIES + 1):
+    for attempts in range(1, tries + 1):
         guess = guess_code()
         correct_pos, incorrect_pos = check_code(guess, code)
 
-        if correct_pos == CODE_LENGTH:
+        if correct_pos == code_length:
             print(f"You guessed the code in {attempts} tries!")
             break
 
@@ -72,10 +78,30 @@ def game():
         print("You ran out of tries, the code was:", *code)
 
 
+def check_numeric(conf_type):
+    num_conf = input(f"Input max {conf_type}: ")
+    while not num_conf.isnumeric():
+        print("You did not enter a number. Please try again.")
+        num_conf = input(f"Input max {conf_type}: ")
+
+    return num_conf
+
+def config():
+    tries = 10
+    code_len = 4
+    config = input("Edit configs for tries and code length (Y/N)? ").upper()
+    if config == "Y":
+        tries = check_numeric("tries")
+        code_len = check_numeric("code length")
+
+        #colors = ["R", "G", "B", "Y", "W", "O"]
+    update_conf(tries, code_len)
+
 if __name__ == "__main__":
     while True:
         start = input("Start a new game (Y/N)? ").upper()
         if start == "Y":
+            config()
             game()
         else: 
             break
